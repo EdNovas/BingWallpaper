@@ -1,5 +1,4 @@
 import os
-from jsdelivr_path import jsdelivr_path
 
 repo_owner = 'myseil'
 repo_name = 'BingWallpaper'
