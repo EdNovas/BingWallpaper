@@ -54,7 +54,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install jsdelivr-path
 
     - name: Generate file paths and write to txt file
       run: python generate_file_paths.py
