@@ -2,31 +2,40 @@ name: Generate File Paths
 
 on:
   push:
+    branches:
+      - main  # 只有推送到 main 分支才触发，防止频繁构建
+  workflow_dispatch: # 【核心修改】允许手动触发构建按钮
+
 jobs:
   generate_file_paths:
     runs-on: ubuntu-latest
 
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4 # 升级到 v4 性能更佳
       with:
         fetch-depth: 1
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5 # 升级到 v5
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-
-    - name: Generate file paths and write to txt file
+    - name: Generate data.php
       run: python generate_file_paths.py
+
     - name: Commit and push changes
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-        git add file_paths.txt
-        git commit -m "Update file_paths.txt"
-        git push
+        
+        # 这里的名字必须和 Python 脚本生成的文件名一致
+        git add data.php
+        
+        # 检查是否有内容变化，防止没有新图片时 commit 报错导致 Action 显示失败
+        if git diff --cached --quiet; then
+          echo "没有检测到任何更改，跳过提交。"
+        else
+          git commit -m "Update data.php with latest images"
+          git push
+        fi
